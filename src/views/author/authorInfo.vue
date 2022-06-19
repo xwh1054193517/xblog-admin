@@ -27,13 +27,12 @@
         ></el-input>
       </el-form-item>
       <el-form-item label="头像" prop="avatar">
-        <!-- <el-input
-          size="medium"
-          clearable
-          v-model="ruleForm.avatar"
-          placeholder="请输入你的头像url"
-        ></el-input> -->
-        <upload :needCut="1" ref="upload" :picData="this.ruleForm" :type="'authors'"></upload>
+        <upload
+          :needCut="1"
+          ref="upload"
+          :picData="this.ruleForm"
+          :type="'authors'"
+        ></upload>
       </el-form-item>
       <el-form-item v-if="type === 'add'" label="密码" prop="password">
         <el-input
@@ -152,7 +151,7 @@ export default {
         password: "",
         confirm: "",
         description: "",
-        auth:0,
+        auth: 0,
       },
       rules: {
         name: [{ validator: checkName, trigger: "blur", required: true }],
@@ -187,10 +186,11 @@ export default {
                 this.$message.error("图片上传出错");
                 return;
               }
+          
               const data = {
                 name: this.ruleForm.name,
                 email: this.ruleForm.email,
-                avatar: pic.result.url,
+                avatar: pic.msg.url,
                 description: this.ruleForm.description,
                 password: this.ruleForm.password,
                 auth: 4,
@@ -280,7 +280,7 @@ export default {
       this.ruleForm.avatar = this.data.avatar;
       this.ruleForm.email = this.data.email;
       this.ruleForm.description = this.data.description;
-      this.ruleForm.auth=this.data.auth
+      this.ruleForm.auth = this.data.auth;
       console.log(this.data);
     }
   },

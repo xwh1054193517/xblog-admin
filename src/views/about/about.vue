@@ -10,7 +10,8 @@
           </div>
         </div>
         <div class="skill-graph" id="main"></div>
-        <div class="dataShow">
+        <div class="datashow" id="datashow"></div>
+        <!-- <div class="dataShow">
           <div class="totalArticle">
             <svg
               t="1654446224529"
@@ -60,7 +61,7 @@
               <VueCountUp :start-value="0" :end-value="articlesNum" :duration="1" />
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="ist">
           <div id="wrapper">
             <div class="viewport">
@@ -95,13 +96,17 @@
 <script>
 import * as echarts from "echarts";
 import article from "@/services/models/article";
-import VueCountUp from 'vue-countupjs' //引入
+import message from "@/services/models/message";
+import VueCountUp from "vue-countupjs"; //引入
 export default {
-  components:{VueCountUp},
+  components: { VueCountUp },
   data() {
     return {
-      articlesNum: 0,
+      totalView: 0,
       articles: null,
+      likeSum: 0,
+      commentSum: 0,
+      totalMessage: 0,
       total: 0,
     };
   },
@@ -152,6 +157,56 @@ export default {
       };
       option && myChart.setOption(option);
     },
+    totalChart() {
+      var chartDom = document.getElementById("datashow");
+      var myChart = echarts.init(chartDom);
+      var option;
+
+      option = {
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow",
+          },
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          containLabel: true,
+        },
+        xAxis: [
+          {
+            type: "category",
+            data: [
+              "TotalArticle",
+              "TotalView",
+              "TotalLike",
+              "TotalMessages",
+              "TotalComment",
+            ],
+            axisTick: {
+              alignWithLabel: true,
+            },
+          },
+        ],
+        yAxis: [
+          {
+            type: "value",
+          },
+        ],
+        series: [
+          {
+            name: "Direct",
+            type: "bar",
+            barWidth: "60%",
+            data: [this.total, this.totalView, this.likeSum, this.totalMessage, this.commentSum],
+          },
+        ],
+      };
+
+      option && myChart.setOption(option);
+    },
     async getArticle() {
       let params = {
         categoryId: 0,
@@ -159,24 +214,29 @@ export default {
         tagId: 0,
         publicId: 1,
         statusId: 1,
-        starId: 1,
+        starId: 0,
         page: 0,
+        count: 9999,
       };
 
       try {
         const { articles, total } = await article.getAllArticle(params);
+      
+        const res=await message.getAllMessages(0,9999)
         this.total = total;
-        console.log(articles);
+        this.totalMessage=res.total
         articles.forEach((item) => {
-          this.articlesNum += item.views;
+          this.totalView += item.views;
+          this.likeSum += item.like;
+          this.commentSum += item.comment_count;
         });
         this.articles = articles;
       } catch (error) {
         this.tabelLoading = false;
         console.log(error);
       }
+      this.totalChart();
     },
-
   },
 };
 </script>

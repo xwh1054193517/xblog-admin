@@ -1,14 +1,32 @@
 const { defineConfig } = require('@vue/cli-service')
+const CompressionPlugin = require('compression-webpack-plugin');
+const compress = new CompressionPlugin({
+    test: /\.js$|\.html$|\.css/, // 匹配文件名
+    threshold: 10240, // 对超过10kb的数据进行压缩
+    deleteOriginalAssets: false // 是否删除原文件
+})
 module.exports = defineConfig({
     publicPath: '/admin/',
     transpileDependencies: true,
     lintOnSave: false,
     productionSourceMap: false, // 生产环境不产生未加密的map文件
     chainWebpack: (config) => {
+        // 最小化代码
+        config.optimization.minimize(true);
+        // 分割代码
+        config.optimization.splitChunks({
+            chunks: 'all'
+        });
         config.externals({
             'echarts': 'echarts'
         });
-    }
+    },
+    configureWebpack: {
+
+        // 通过 compression-webpack-plugin 插件对js文件进行gzip压缩
+        plugins: [compress]
+    },
+
 })
 
 
