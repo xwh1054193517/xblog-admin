@@ -417,6 +417,7 @@ export default {
       this.tags = this.filterNeeds(this.passTags);
       this.authors = this.filterNeeds(this.passAuthors);
       this.Info = JSON.parse(JSON.stringify(this.data));
+       console.log(this.Info)
     }
   },
 };

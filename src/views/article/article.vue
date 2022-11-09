@@ -112,6 +112,15 @@
         @handleChange="OnHandleChange"
         @handleEdit="OnHandleEdit"
       ></article-table>
+<div class="pagination">
+    <el-pagination
+        :page-size="10"
+        @current-change="handleCurrentChange"
+        background
+        layout="prev, pager, next"
+        :total="total">
+    </el-pagination>
+  </div>
     </el-card>
   </div>
   <div class="edit-container" v-else>
@@ -259,7 +268,7 @@ export default {
         this.tabelLoading = true;
         const { articles, total } = await article.getAllArticle(params);
         this.total = total;
-        // console.log(articles);
+        console.log(this.total);
         articles.forEach((item) => {
           item.created_date = utils.FormatTime(item.created_date);
         });
@@ -270,7 +279,11 @@ export default {
         console.log(error);
       }
     },
-
+    async handleCurrentChange(e){
+      console.log(e);
+      this.page=e-1
+      await this.getArticle()
+    },
     //处理事件监听
     // 表单上的按钮改变
     OnHandleChange(change) {
@@ -308,6 +321,7 @@ export default {
     },
   },
   created() {
+    console.log('触发create');
     this.loading = true;
     this.getAuthors();
     this.getTags();
@@ -315,22 +329,32 @@ export default {
     this.getArticle();
     this.loading = false;
   },
+  activated(){
+    console.log('触发了activated');
+  },
+  deactivated(){
+    console.log('触发了deactivated');
+  }
 };
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/title.scss";
+
 .container {
   .add {
     justify-content: space-between;
   }
+
   .search-box {
     display: flex;
     justify-content: flex-start;
+
     @media (max-width:571px) {
       width: 14rem;
     }
   }
+
   .searchBtn {
     margin: 0 0 0 5px;
     border-radius: 5px;
@@ -366,10 +390,12 @@ export default {
           box-sizing: border-box;
           margin: 5px 5px;
           padding: 5px 15px;
+
           @media (max-width: 571px) {
             margin: 2px;
             padding: 3px 8px;
           }
+
           cursor: pointer;
           transition: all 0.8s linear;
         }
@@ -379,9 +405,14 @@ export default {
         background-color: rgb(77, 170, 241);
         color: #fff;
         border-radius: 10px;
-        
+
       }
     }
   }
+}
+.pagination{
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 }
 </style>
